@@ -88,6 +88,13 @@ def main():
         pv_type = type_map[vu['type']]
         pv_entry = {'type': pv_type, 'value': vu['value'], 'unit': vu['units'], 'prec': vu['precision']}
         enum_strs = vu['enum_strs']
+
+        limits_map = {'lower_ctrl_limit': 'lolim', 'upper_ctrl_limit': 'hilim', 'lower_warning_limit': 'low', 'upper_warning_limit': 'high', 'lower_alarm_limit': 'lolo', 'upper_alarm_limit': 'hihi'}
+        for limit in limits_map.keys():
+            # PCASpy expects the default values to be 0:
+            if vu[limit] is None: vu[limit] = 0.0
+            pv_entry[limits_map[limit]] = vu[limit]
+
         if pv_type == 'enum' and enum_strs is not None:
             enum_strs = list(enum_strs)
             for i in range(len(enum_strs)):
