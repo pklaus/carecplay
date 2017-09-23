@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, logging, pickle, time
+import os, sys, logging, pickle, time, itertools
 from threading import Thread, Event, Lock
 from pcaspy import Driver, SimpleServer
 
@@ -89,7 +89,9 @@ def main():
         pv_entry = {'type': pv_type, 'value': vu['value'], 'unit': vu['units'], 'prec': vu['precision']}
         enum_strs = vu['enum_strs']
 
-        limits_map = {'lower_ctrl_limit': 'lolim', 'upper_ctrl_limit': 'hilim', 'lower_warning_limit': 'low', 'upper_warning_limit': 'high', 'lower_alarm_limit': 'lolo', 'upper_alarm_limit': 'hihi'}
+        limits_pyepics = map(lambda x: '_'.join(x), itertools.product(['lower', 'upper'], ['ctrl_limit', 'alarm_limit', 'warning_limit']))
+        limits_pcaspy  = 'lolim', 'lolo', 'low', 'hilim', 'hihi', 'high'
+        limits_map = dict(zip(limits_pyepics, limits_pcaspy))
         for limit in limits_map.keys():
             # PCASpy expects the default values to be 0:
             if vu[limit] is None: vu[limit] = 0.0
